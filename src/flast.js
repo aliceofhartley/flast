@@ -162,8 +162,12 @@ function extractNodesFromRoot(rootNode, opts) {
 				node.lineage.push(node.scope.scopeId);
 			}
 		}
-		// Add a getter for the node's source code
-		if (opts.includeSrc && !node.src) node.src = rootNode.src.substring(node.start,node.end);
+		// Avoid using a getter with a closure around source here, as the 
+		// memory requirement for a function per node is far greater than using 
+		// a string reference for sufficiently large AST Trees 
+		// (~2.4 nodes for 3 Gib).
+		if (opts.includeSrc && !node.src) 
+			node.src = rootNode.src.substring(node.start,node.end);
 	}
 	if (opts.detailed) {
 		const identifiers = typeMap.Identifier || [];
